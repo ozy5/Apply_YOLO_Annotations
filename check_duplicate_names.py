@@ -3,9 +3,10 @@ import numpy as np
 import time
 import shutil
 
-ROOT_PATH = "annotated_images"
+ROOT_PATH = "/home/umut/datasets_raw/Roboflow"
 
 sub_dirs = os.listdir(ROOT_PATH)
+print(sub_dirs)
 
 all_paths = []
 
@@ -43,12 +44,12 @@ for dir in sub_dirs:
             saved_names[current_name_actual] = 1
             saved_names_full_path.append(os.path.join(ROOT_PATH, dir, current_name))
 
-os.makedirs("annotated_images_no_duplicates", exist_ok=True)
+# os.makedirs("annotated_images_no_duplicates", exist_ok=True)
 
-for current_path in saved_names_full_path:
-    shutil.copy(current_path, "annotated_images_no_duplicates")
+# for current_path in saved_names_full_path:
+#     shutil.copy(current_path, "annotated_images_no_duplicates")
 
-print(f"Time taken: {time.time() - start}")
+# print(f"Time taken: {time.time() - start}")
 
 
 #O(n^2)
