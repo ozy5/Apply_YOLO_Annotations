@@ -126,7 +126,7 @@ for DATASET_NAME in os.listdir(DATASET_ROOT_PATH):
         ext_name = current_image.split(".")[-1]
         ext_lenght = len(ext_name)
 
-        img_name_without_ext = current_image[0 :(name_length - 2 - ext_lenght)]
+        img_name_without_ext = current_image[0 :(name_length - 1 - ext_lenght)]
         absolute_img_name = img_name_without_ext.split("/")[-1]
 
         #check if label exists
@@ -175,7 +175,10 @@ for DATASET_NAME in os.listdir(DATASET_ROOT_PATH):
                     cv2.rectangle(current_img_array, (bbox_x1, bbox_y1), (bbox_x2, bbox_y2), color_map[int(current_labels_class)], 2)
 
                     #add the label text to the image including the class name
-                    cv2.putText(current_img_array, f"{class_names[int(current_labels_class)]}", (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color_map[int(current_labels_class)], 1, cv2.LINE_AA)    
+                    #random color
+                    cv2.putText(current_img_array, f"{class_names[int(current_labels_class)]}", (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color_map[int(current_labels_class)], 1, cv2.LINE_AA)  
+                    #red color
+                    cv2.putText(current_img_array, f"{class_names[int(current_labels_class)]}", (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 1, cv2.LINE_AA)    
                 
             
             #write the project name with light blue on left corner
