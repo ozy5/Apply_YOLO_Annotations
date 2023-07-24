@@ -7,12 +7,22 @@ import numpy as np
 from PIL import Image
 
 
+
+
+
 #SAVE_PATH_OPENCV = "./annotated_images/OPENCV"
 #os.makedirs(SAVE_PATH_OPENCV, exist_ok=True)
 
+DATASET_ROOT_PATH = "/home/umut/datasets_raw/Roboflow"
+
+DATASET_NAME = "FLIR_data_set_Image_Dataset"
+
+DATASET_FULL_PATH = os.path.join(DATASET_ROOT_PATH, DATASET_NAME)
+
+
 
 # Open the file and load the file
-with open('data.yaml') as f:
+with open(os.path.join(DATASET_FULL_PATH, "data.yaml")) as f:
     data = yaml.load(f, Loader=SafeLoader)
     print(data)
 
@@ -25,22 +35,35 @@ for key in range(class_count):
 
 class_names = data["names"]
 
+person_index = class_names.index("person")
+
+print(class_names)
+
 project_name = data["roboflow"]["project"]
 
 
-SAVE_PATH_PIL = os.path.join("./annotated_images/", project_name)
+
+
+SAVE_PATH_ROOT = "/home/umut/Desktop/only_human_annotated_images"
+
+SAVE_PATH_PIL = os.path.join(SAVE_PATH_ROOT, DATASET_NAME)
 os.makedirs(SAVE_PATH_PIL, exist_ok=True)
+
+SAVE_PATH_ROOT_0_HUMAN = os.path.join(SAVE_PATH_ROOT, "0_human")
+os.makedirs(SAVE_PATH_ROOT_0_HUMAN, exist_ok=True)
+
+SAVE_PATH_ROOT_1_OR_MORE_HUMAN = os.path.join(SAVE_PATH_ROOT, "1_OR_MORE_human")
 
 
 #Find the paths of all images
-train_img_dir = data["train"][1:]
-train_image_names = [(train_img_dir + "/" + x) for x in os.listdir(train_img_dir)]
+train_img_dir = os.path.join(DATASET_FULL_PATH ,data["train"][3:])
+train_image_names = [(train_img_dir + "/" + x) for x in os.listdir((train_img_dir))]
 
-val_img_dir = data["val"][1:]
+val_img_dir = os.path.join(DATASET_FULL_PATH ,data["val"][3:])
 val_image_names = [(val_img_dir + "/" + x) for x in os.listdir(val_img_dir)]
 
-if(os.path.exists(data["test"][1:])):
-    test_img_dir = data["test"][1:]
+if(os.path.exists(os.path.join(DATASET_FULL_PATH ,data["test"][3:]))):
+    test_img_dir = os.path.join(DATASET_FULL_PATH ,data["test"][3:])
     test_image_names = [(test_img_dir + "/" + x) for x in os.listdir(test_img_dir)]
 
 
@@ -51,12 +74,12 @@ if(os.path.exists(data["test"][1:])):
 
 all_images_paths = train_image_names + val_image_names
 
-if(os.path.exists(data["test"][1:])):
+if(os.path.exists(os.path.join(DATASET_FULL_PATH ,data["test"][3:]))):
     all_images_paths = all_images_paths + test_image_names
 
 
 
-random.shuffle(all_images_paths)
+#random.shuffle(all_images_paths)
 
 
 #Find the paths of all labels
@@ -70,7 +93,7 @@ val_label_dir = val_img_dir[0 : (len(val_img_dir) - 6)] + "labels"
 val_label_names = [(val_label_dir + "/" + x) for x in os.listdir(val_label_dir)]
 val_label_names_array = np.array(val_label_names)
 
-if(os.path.exists(data["test"][1:])):
+if(os.path.exists(os.path.join(DATASET_FULL_PATH ,data["test"][3:]))):
     test_label_dir = test_img_dir[0 : (len(test_img_dir) - 6)] + "labels"
     test_label_names = [(test_label_dir + "/" + x) for x in os.listdir(test_label_dir)]
     test_label_names_array = np.array(test_label_names)
@@ -78,7 +101,7 @@ if(os.path.exists(data["test"][1:])):
 
 all_labels_paths = np.concatenate((train_label_names_array, val_label_names_array), axis=0)
 
-if(os.path.exists(data["test"][1:])):
+if(os.path.exists(os.path.join(DATASET_FULL_PATH ,data["test"][3:]))):
     all_labels_paths = np.concatenate((all_labels_paths, test_label_names_array), axis=0)
 
 
@@ -103,12 +126,18 @@ for current_image in all_images_paths:
         current_img_width = current_img_array.shape[1]
         current_img_height = current_img_array.shape[0]
         
+
         with open(current_label_path, "r") as f:
             labels = f.readlines()
+
+            #draw the annotations on the image
             for i in range(len(labels)):
                 current_label = labels[i]
 
                 current_labels_class = current_label.split(" ")[0]
+
+                if(current_labels_class != str(person_index)):
+                    continue
                 
                 current_labels_bbox_x = float(current_label.split(" ")[1])
                 current_labels_bbox_y = float(current_label.split(" ")[2])
@@ -137,8 +166,8 @@ for current_image in all_images_paths:
 
         #save with PIL
         im_pil = Image.fromarray(cv2.cvtColor(current_img_array, cv2.COLOR_BGR2RGB))
-        im_pil.save(SAVE_PATH_PIL + "/" + absolute_img_name + "_annotated" + "." + ext_name)
-        print("Saved image: " + absolute_img_name + "_annotated" + "." + ext_name)
+        im_pil.save(SAVE_PATH_PIL + "/" + absolute_img_name + "_annotated_only_human" + "." + ext_name)
+        print("Saved image: " + absolute_img_name + "_annotated_only_human" + "." + ext_name)
 
 
 # cv2.imread()
