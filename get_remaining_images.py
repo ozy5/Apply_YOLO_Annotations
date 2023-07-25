@@ -1,18 +1,16 @@
 import os
 import numpy as np
 import shutil
-
+from utils.leave_only_the_wanted_class_and_copy_txt import leave_only_the_wanted_class_and_copy_txt
+from utils.find_the_dataset_of_the_name import find_the_dataset_of_the_name
+from utils.find_the_id_of_class_in_dataset import find_the_id_of_class_in_dataset
 
 SOURCE_NAME_PATH = "/home/umut/Desktop/random_selected_images"
 
 POSTFIX = "_humans_annotated"
 
 
-COPY_PATH = "/home/umut/Desktop/all_images_and_labels_no_duplicate_names"
-
-COPY_PATH_IMAGES = os.path.join(COPY_PATH, "images")
-COPY_PATH_LABELS = os.path.join(COPY_PATH, "labels")
-
+COPY_PATH = "/home/umut/dataset_no_duplicate_names/Roboflow_2023_07_24/Roboflow"
 
 
 
@@ -32,12 +30,32 @@ for image in all_paths:
     image_name_split = image.split(POSTFIX)
 
     image_name = image_name_split[0]
-    print(image_name)
     image_ext = image_name_split[1]
-    print(os.path.join(COPY_PATH_IMAGES, image_name + ".jpg"))
+    
 
-    # shutil.copy(os.path.join(COPY_PATH_IMAGES, image_name + ".jpg"), DEST_PATH_IMAGES)
+    current_dataset_path = find_the_dataset_of_the_name(image_name, COPY_PATH)
+
+    shutil.copy(os.path.join(current_dataset_path, "images", image_name + image_ext), DEST_PATH_IMAGES)
+
+    # # copy the original txt file
     # shutil.copy(os.path.join(COPY_PATH_LABELS, image_name + ".txt"), DEST_PATH_LABELS)
+
+    current_dataset_path_parent = "/".join(current_dataset_path.split("/")[:-1])
+
+
+    # find the humans id
+    humans_id = [find_the_id_of_class_in_dataset(current_dataset_path_parent, "person")]
+
+    print(os.path.join(current_dataset_path, "labels", image_name + ".txt"))
+    print(os.path.join(DEST_PATH_LABELS, image_name + ".txt"),"\n")
+
+    # copy the txt file that has only the wanted class
+    leave_only_the_wanted_class_and_copy_txt(os.path.join(current_dataset_path, "labels", image_name + ".txt"),
+                                             os.path.join(DEST_PATH_LABELS, image_name + ".txt"),
+                                             humans_id)
+
+
+
 
 
 
