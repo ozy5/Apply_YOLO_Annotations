@@ -7,6 +7,8 @@ SOURCE_PATH = "/home/umut/Desktop/0_human_images_annotated"
 
 DEST_PATH = "/home/umut/Desktop/selected_images"
 
+os.makedirs(DEST_PATH, exist_ok=True)
+
 RANDOM_IMAGE_COUNT = 300
 
 all_paths = os.listdir(SOURCE_PATH)
