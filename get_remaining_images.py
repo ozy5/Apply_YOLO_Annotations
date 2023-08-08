@@ -5,16 +5,16 @@ from utils.leave_only_the_wanted_class_and_copy_txt import leave_only_the_wanted
 from utils.find_the_dataset_of_the_name import find_the_dataset_of_the_name
 from utils.find_the_id_of_class_in_dataset import find_the_id_of_class_in_dataset
 
-SOURCE_NAME_PATH = "/home/umut/Desktop/random_selected_images"
+SOURCE_NAME_PATH = "/home/umut/Desktop/new_test"
 
 POSTFIX = "_humans_annotated"
 
 
-COPY_PATH = "/home/umut/dataset_no_duplicate_names/Roboflow_2023_07_24/Roboflow"
+COPY_PATH = "/home/umut/datasets_raw/Roboflow"
 
 
 
-DEST_PATH = "/home/umut/Desktop/remaining_images"
+DEST_PATH = "/home/umut/Desktop/remaining_images_for_new_test"
 
 DEST_PATH_IMAGES = os.path.join(DEST_PATH, "images")
 DEST_PATH_LABELS = os.path.join(DEST_PATH, "labels")
@@ -29,6 +29,7 @@ all_paths = os.listdir(SOURCE_NAME_PATH)
 for image in all_paths:
     image_name_split = image.split(POSTFIX)
 
+
     image_name = image_name_split[0]
     image_ext = image_name_split[1]
     
@@ -36,6 +37,7 @@ for image in all_paths:
     current_dataset_path = find_the_dataset_of_the_name(image_name, COPY_PATH)
 
     shutil.copy(os.path.join(current_dataset_path, "images", image_name + image_ext), DEST_PATH_IMAGES)
+
 
     # # copy the original txt file
     # shutil.copy(os.path.join(COPY_PATH_LABELS, image_name + ".txt"), DEST_PATH_LABELS)
