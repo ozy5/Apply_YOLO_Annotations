@@ -17,8 +17,13 @@ def find_the_id_of_class_in_dataset(DATASET_PATH: str,
     # Get the class names
     class_names = data["names"]
 
+
+    if(type(class_names) == list):
+        class_index = class_names.index(class_name)
+    elif(type(class_names) == dict):
+        class_index = class_names[class_name]
+
     # Find the index of the class name
-    class_index = class_names.index(class_name)
     
     # Return the class index
     return class_index

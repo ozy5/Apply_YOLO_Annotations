@@ -13,13 +13,15 @@ from PIL import Image
 #SAVE_PATH_OPENCV = "./annotated_images/OPENCV"
 #os.makedirs(SAVE_PATH_OPENCV, exist_ok=True)
 
-DATASET_ROOT_PATH = "/home/umut/dataset_no_duplicate_names/Roboflow"
+DATASET_ROOT_PATH = "/home/umut/HIT-UAV-DATASET"
 
-SAVE_PATH_ROOT = "/home/umut/Desktop/only_human_annotated_images"
+SAVE_PATH_ROOT = "/home/umut/Desktop/HIT-UAV-HUMANS-ANNOTATED-1_thickness"
 
 total_annotation_count = 0
 
+box_thickness = 1
 
+random_color = False
 
 #DATASET_NAME = "FLIR_data_set_Image_Dataset"
 
@@ -44,10 +46,11 @@ for DATASET_NAME in os.listdir(DATASET_ROOT_PATH):
 
     class_names = data["names"]
 
-    person_index = class_names.index("person")
+    person_index = 0
+    #person_index = class_names.index("Person")
 
-    project_name = data["roboflow"]["project"]
-
+    project_name = "HIT-UAV"
+    #project_name = data["roboflow"]["project"]
 
 
 
@@ -137,6 +140,10 @@ for DATASET_NAME in os.listdir(DATASET_ROOT_PATH):
         if(if_label_exists.any()):
             current_label_path = all_labels_paths[if_label_exists][0]
 
+
+
+            current_dataset = current_image.split("/")[-4]
+
             current_img_array = cv2.imread(current_image)
             current_img_width = current_img_array.shape[1]
             current_img_height = current_img_array.shape[0]
@@ -172,22 +179,27 @@ for DATASET_NAME in os.listdir(DATASET_ROOT_PATH):
                     (bbox_x2, bbox_y2) = (int((current_labels_bbox_x + current_labels_bbox_w/2) * current_img_width), int((current_labels_bbox_y + current_labels_bbox_h/2) * current_img_height))
 
                     #add bbox with the correntponding color regarding the color_map to the image
-                    cv2.rectangle(current_img_array, (bbox_x1, bbox_y1), (bbox_x2, bbox_y2), color_map[int(current_labels_class)], 2)
+                    cv2.rectangle(current_img_array, (bbox_x1, bbox_y1), (bbox_x2, bbox_y2), color_map[int(current_labels_class)], thickness=box_thickness)
 
                     #add the label text to the image including the class name
-                    #random color
-                    cv2.putText(current_img_array, f"{class_names[int(current_labels_class)]}", (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color_map[int(current_labels_class)], 1, cv2.LINE_AA)  
-                    #red color
-                    cv2.putText(current_img_array, f"{class_names[int(current_labels_class)]}", (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 1, cv2.LINE_AA)    
+                    if(random_color):
+                        #random color
+                        cv2.putText(current_img_array, f"{class_names[int(current_labels_class)]}", (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color_map[int(current_labels_class)], 1, cv2.LINE_8)  
+                    else:    
+                        #red color
+                        cv2.putText(current_img_array, f"{class_names[int(current_labels_class)]}", (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 1, cv2.LINE_8)    
                 
             
             #write the project name with light blue on left corner
-            cv2.putText(current_img_array, f"{project_name}", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
+            cv2.putText(current_img_array, f"{project_name}", (10, 20), cv2.FONT_HERSHEY_COMPLEX_SMALL  , 0.5, (255, 255, 0), 1, cv2.LINE_AA)
             
 
             # #save the annotated image
             # cv2.imwrite(SAVE_PATH_OPENCV + "/" + absolute_img_name + "_annotated" + "." + ext_name, current_img_array)
             # print("Saved image: " + absolute_img_name + "_annotated_opencv" + "." + ext_name)
+
+            
+
 
             #save with PIL
             im_pil = Image.fromarray(cv2.cvtColor(current_img_array, cv2.COLOR_BGR2RGB))

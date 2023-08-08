@@ -25,7 +25,8 @@ for dataset in datasets:
 
         number_to_divide = current_dataset_sub_folder_images_count / n
 
-        random.shuffle(current_dataset_sub_folder_images)
+        #random.shuffle(current_dataset_sub_folder_images)
+        current_dataset_sub_folder_images.sort()
 
         merged_dataset_path = os.path.join(dataset, sub_folder)
 

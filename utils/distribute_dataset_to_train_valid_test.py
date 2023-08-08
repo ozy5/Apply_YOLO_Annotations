@@ -31,9 +31,12 @@ dataset_source_path = "/home/umut/Desktop/remaining_images"
 dataset_path_images = os.path.join(dataset_source_path, "images")
 dataset_path_labels = os.path.join(dataset_source_path, "labels")
 
-train_ratio = 0.8
-val_ratio = 0.15
-test_ratio = 0.05
+os.makedirs(dataset_path_images, exist_ok=True)
+os.makedirs(dataset_path_labels, exist_ok=True)
+
+train_ratio = 0.85
+val_ratio = 0.12
+test_ratio = 0.03
 
 all_names_images = sorted(os.listdir(dataset_path_images))
 all_names_labels = sorted(os.listdir(dataset_path_labels))
