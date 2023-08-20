@@ -38,31 +38,39 @@ for DATASET_NAME in os.listdir(DATASET_ROOT_PATH):
         print(data)
 
     #randomize the bbox colors for detection classes
-    class_count = data["nc"]
-    color_map = dict()
-    for key in range(class_count):
-        color_map[key] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    #class_count = data["nc"]
+    # for key in range(class_count):
+    #     color_map[key] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
 
     class_names = data["names"]
 
-    person_index = 0
+    name_map = dict(zip([str(x) for x in range(len(class_names))], class_names))
+
+    color_map = {
+        "Drone": (0, 0, 255),
+        "Bird": (0, 255, 0),
+        "Other": (255, 0, 0),
+        "Helicopter": (255, 255, 0),
+        "Aircraft": (255, 0, 255),
+        "Missile": (0, 255, 255),
+    }
+
+    #person_index = 0
     #person_index = class_names.index("Person")
 
-    project_name = "nii_cu"
     #project_name = data["roboflow"]["project"]
-
-
+    project_name = "nii_cu"
 
 
     SAVE_PATH_PIL = os.path.join(SAVE_PATH_ROOT, DATASET_NAME)
     os.makedirs(SAVE_PATH_PIL, exist_ok=True)
 
-    SAVE_PATH_ROOT_0_HUMAN = os.path.join(SAVE_PATH_PIL, "0_human")
-    os.makedirs(SAVE_PATH_ROOT_0_HUMAN, exist_ok=True)
+    SAVE_PATH_ROOT_0_OBJECT = os.path.join(SAVE_PATH_PIL, "0_object(background)")
+    os.makedirs(SAVE_PATH_ROOT_0_OBJECT, exist_ok=True)
 
-    SAVE_PATH_ROOT_1_OR_MORE_HUMAN = os.path.join(SAVE_PATH_PIL, "1_OR_MORE_human")
-    os.makedirs(SAVE_PATH_ROOT_1_OR_MORE_HUMAN, exist_ok=True)
+    SAVE_PATH_ROOT_1_OR_MORE_OBJECT = os.path.join(SAVE_PATH_PIL, "1_or_more_object")
+    os.makedirs(SAVE_PATH_ROOT_1_OR_MORE_OBJECT, exist_ok=True)
 
 
     #Find the paths of all images
@@ -152,7 +160,22 @@ for DATASET_NAME in os.listdir(DATASET_ROOT_PATH):
             with open(current_label_path, "r") as f:
                 labels = f.readlines()
 
-                human_count = 0
+                unique_labels = {}
+
+                for i in range(len(labels)):
+                    current_label = labels[i]
+                    current_labels_class = current_label.split(" ")[0]
+                    current_labels_name = name_map[current_labels_class]
+
+                    if not ((current_labels_name == "Drone") or (current_labels_name == "Aircraft") or (current_labels_name == "Helicopter")):
+                        continue
+
+                    try:
+                        unique_labels[current_labels_name] += 1
+                    except:
+                        unique_labels[current_labels_name] = 1
+
+                object_count = 0
 
                 #draw the annotations on the image
                 for i in range(len(labels)):
@@ -160,11 +183,15 @@ for DATASET_NAME in os.listdir(DATASET_ROOT_PATH):
 
                     current_labels_class = current_label.split(" ")[0]
 
-                    #Draw only human annotations
-                    if(current_labels_class != str(person_index)):
+                    current_labels_name = name_map[current_labels_class]
+
+                    if not ((current_labels_name == "Drone") or (current_labels_name == "Aircraft") or (current_labels_name == "Helicopter")):
                         continue
 
-                    human_count += 1
+                    current_labels_color = color_map[current_labels_name]
+
+
+                    object_count += 1
 
                     total_annotation_count += 1
                     
@@ -179,21 +206,26 @@ for DATASET_NAME in os.listdir(DATASET_ROOT_PATH):
                     (bbox_x2, bbox_y2) = (int((current_labels_bbox_x + current_labels_bbox_w/2) * current_img_width), int((current_labels_bbox_y + current_labels_bbox_h/2) * current_img_height))
 
                     #add bbox with the correntponding color regarding the color_map to the image
-                    #cv2.rectangle(current_img_array, (bbox_x1, bbox_y1), (bbox_x2, bbox_y2), color_map[int(current_labels_class)], thickness=box_thickness)
-                    cv2.rectangle(current_img_array, (bbox_x1, bbox_y1), (bbox_x2, bbox_y2), (0,0,255), thickness=box_thickness)
+                    cv2.rectangle(current_img_array, (bbox_x1, bbox_y1), (bbox_x2, bbox_y2), current_labels_color, thickness=box_thickness)
 
                     #add the label text to the image including the class name
                     if(random_color):
                         #random color
-                        cv2.putText(current_img_array, f"{class_names[int(current_labels_class)]}", (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color_map[int(current_labels_class)], 1, cv2.LINE_8)  
+                        cv2.putText(current_img_array, current_labels_name, (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, current_labels_color, 1, cv2.LINE_8)  
                     else:    
                         #red color
-                        cv2.putText(current_img_array, f"{class_names[int(current_labels_class)]}", (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 1, cv2.LINE_8)    
+                        cv2.putText(current_img_array, current_labels_name, (bbox_x1, bbox_y1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, current_labels_color, 1, cv2.LINE_8)    
                 
             
             #write the project name with light blue on left corner
-            cv2.putText(current_img_array, f"{project_name}", (10, 20), cv2.FONT_HERSHEY_COMPLEX_SMALL  , 0.5, (255, 255, 0), 1, cv2.LINE_AA)
+            cv2.putText(current_img_array, f"{project_name}", (10, 20), cv2.FONT_HERSHEY_COMPLEX_SMALL  , 0.5, (255, 0, 0), 1, cv2.LINE_AA)
             
+
+            for i, key in enumerate(sorted(list(unique_labels.keys()))):
+                cv2.putText(current_img_array, f"{key}:".ljust(12) + str(unique_labels[key]), (10, (40 + 15 * i)), cv2.FONT_HERSHEY_SIMPLEX  , 0.5, color_map[key], 1, cv2.LINE_AA)
+
+
+
 
             # #save the annotated image
             # cv2.imwrite(SAVE_PATH_OPENCV + "/" + absolute_img_name + "_annotated" + "." + ext_name, current_img_array)
@@ -204,10 +236,10 @@ for DATASET_NAME in os.listdir(DATASET_ROOT_PATH):
 
             #save with PIL
             im_pil = Image.fromarray(cv2.cvtColor(current_img_array, cv2.COLOR_BGR2RGB))
-            if(human_count == 0):
-                im_pil.save(SAVE_PATH_ROOT_0_HUMAN + "/" + absolute_img_name + "_humans_annotated" + "." + ext_name)
-            elif(human_count >= 1):
-                im_pil.save(SAVE_PATH_ROOT_1_OR_MORE_HUMAN + "/" + absolute_img_name + "_humans_annotated" + "." + ext_name)
+            if(object_count == 0):
+                im_pil.save(SAVE_PATH_ROOT_0_OBJECT + "/" + absolute_img_name + "_annotated" + "." + ext_name)
+            elif(object_count >= 1):
+                im_pil.save(SAVE_PATH_ROOT_1_OR_MORE_OBJECT + "/" + absolute_img_name + "_annotated" + "." + ext_name)
 
 print(f"Total annotation count: {total_annotation_count}")
 

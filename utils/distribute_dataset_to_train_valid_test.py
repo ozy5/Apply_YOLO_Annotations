@@ -2,7 +2,10 @@ import os
 import shutil
 import random
 
-DATA_SET_DEST_PATH = "/home/umut/Desktop/ready_to_train_dataset"
+DATASET_SOURCE_PATH = "/home/umut/Desktop/AKONS_FINAL_DATASET/DATASET_WITH_LABELS"
+
+DATA_SET_DEST_PATH = "/home/umut/Desktop/AKONS_FINAL_DATASET/READY_DATASET"
+
 
 DATA_SET_DEST_PATH_TRAIN = os.path.join(DATA_SET_DEST_PATH, "train")
 DATA_SET_DEST_PATH_VAL = os.path.join(DATA_SET_DEST_PATH, "val")
@@ -26,10 +29,9 @@ os.makedirs(DATA_SET_DEST_PATH_VAL_LABELS, exist_ok=True)
 os.makedirs(DATA_SET_DEST_PATH_TEST_IMAGES, exist_ok=True)
 os.makedirs(DATA_SET_DEST_PATH_TEST_LABELS, exist_ok=True)
 
-dataset_source_path = "/home/umut/Desktop/remaining_images"
 
-dataset_path_images = os.path.join(dataset_source_path, "images")
-dataset_path_labels = os.path.join(dataset_source_path, "labels")
+dataset_path_images = os.path.join(DATASET_SOURCE_PATH, "images")
+dataset_path_labels = os.path.join(DATASET_SOURCE_PATH, "labels")
 
 os.makedirs(dataset_path_images, exist_ok=True)
 os.makedirs(dataset_path_labels, exist_ok=True)
