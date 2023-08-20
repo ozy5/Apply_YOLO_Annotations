@@ -5,19 +5,22 @@ import os
 DATASET_ROOT_PATH = "/home/umut/Desktop/AKONS_TRAINING_DATASET"
 
 
-DEST_PATH = "/home/umut/Desktop/AKONS_TRAINING_DATASET_all_labels_only_human_annotations"
+DEST_PATH = "/home/umut/Desktop/LABELS_DRONE_AIRCRAFT_HELICOPTER"
 
 os.makedirs(DEST_PATH, exist_ok=True)
 
 
 datasets_dict = {
     "attemp6.v1i.yolov5pytorch" : {"0":"0"},
-    "Drone Detection.v4i.yolov5pytorch": {"2":"0"},
+    "Drone Detection.v4i.yolov5pytorch": {"2":"0", "0":"1"},
     "drone_detection_final roboflow universe.v1i.yolov5pytorch": {"0":"0"},
     "Drony.v8i.yolov5pytorch": {"0":"0"},
-    "Heli Drone Missile.v4i.yolov5pytorch": {"0":"0"},
+    "Heli Drone Missile.v4i.yolov5pytorch": {"0":"0", "1":"2"},
     "KILINC3.v3i.yolov5pytorch": {"1":"0"},
-    "x2.v1i.yolov8": {"0":"0"}
+    "x2.v1i.yolov8": {"0":"0"},
+    "egitim.v3i.yolov5pytorch": {"0":"1", "1":"1"},
+    "part4.v1-part4.yolov5pytorch": {"0":"0"},
+    "Helicopters-of-DC.v2-copterfinder1.2.yolov5pytorch": {"0":"2", "1":"2", "2":"2", "3":"2", "4":"2", "5":"2", "6":"2", "7":"2", "8":"2", "9":"2", "10":"2", "11":"2", "12":"2", "13":"2", "14":"2", "15":"2", "16":"2", "17":"2", "18":"2", "19":"2", "20":"2", }
 }
 
 

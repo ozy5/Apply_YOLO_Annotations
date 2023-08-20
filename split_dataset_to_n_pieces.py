@@ -2,11 +2,11 @@ import os
 import shutil
 import random
 
-n=20
+n=36
 
-DATASET_ROOT_PATH = "/home/umut/Desktop/no_llvip_IR_annotated_humans_only"
+DATASET_ROOT_PATH = "/home/umut/Desktop/ANNOTATED_DRONE_AIRCRAFT_HELICOPTER_AKONS"
 
-DATASET_DEST_PATH = "/home/umut/Desktop/distributed_dataset_no_llvip_IR_annotated_humans_only"
+DATASET_DEST_PATH = "/home/umut/Desktop/36_PARTS_DATASET"
 
 for i in range(n):
     os.makedirs(os.path.join(DATASET_DEST_PATH, "part_" + str(i)), exist_ok=True)
